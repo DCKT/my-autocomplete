@@ -1,0 +1,21 @@
+{
+  "name": "my-autocomplete",
+  "version": "0.0.1",
+  "description": "Create your own autocomplete",
+  "main": "lib/autocomplete.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "autocomplete",
+    "vanillajs"
+  ],
+  "author": "Thomas Deconinck",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^5.6.1",
+    "babel-loader": "^5.1.4",
+    "node-libs-browser": "^0.5.2",
+    "webpack": "^1.9.11"
+  }
+}
