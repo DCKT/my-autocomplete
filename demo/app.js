@@ -9,7 +9,7 @@ var test = [
 document.addEventListener('DOMContentLoaded', function() {
   var search = new Autocomplete({
     input: '#search',
-    data: test
+    url: 'http://localhost:3000/results'
   });
 
 

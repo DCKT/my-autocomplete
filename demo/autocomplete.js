@@ -52,7 +52,7 @@
 	document.addEventListener("DOMContentLoaded", function () {
 	  var search = new Autocomplete({
 	    input: "#search",
-	    data: test
+	    url: "http://localhost:3000/results"
 	  });
 	}, false);
 
@@ -76,6 +76,7 @@
 
 	    this.input = document.querySelector(options.input);
 	    this.data = options.data;
+	    this.url = options.url;
 	    this.maxResult = options.maxResult ? options.maxResult : 5;
 	    this.bind();
 	  }
@@ -105,9 +106,9 @@
 	  }, {
 	    key: 'parse',
 	    value: function parse() {
-	      console.log(this.value);
+
 	      if (this.value) {
-	        if (typeof this.data === 'string') {
+	        if (this.url) {
 	          this.parseURL();
 	        } else {
 	          this.parseArray();
@@ -126,6 +127,26 @@
 	        return el.toLowerCase().indexOf(value) != -1;
 	      }).slice(0, this.maxResult);
 	      this.updateResults();
+	    }
+	  }, {
+	    key: 'parseURL',
+	    value: function parseURL() {
+	      var xhr = new XMLHttpRequest();
+
+	      xhr.open('GET', this.url, true);
+
+	      xhr.onreadystatechange = function (event) {
+	        if (xhr.readyState == 4) {
+	          if (xhr.status == 200) {
+	            var data = JSON.parse(xhr.response);
+	            console.log(data);
+	          } else {
+	            console.error('Error from the server');
+	          }
+	        }
+	      };
+
+	      xhr.send(null);
 	    }
 	  }, {
 	    key: 'updateResults',
