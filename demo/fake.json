@@ -1,11 +1,28 @@
 {
   "results": [
-    "France",
-    "Paris",
-    "Lille",
-    "Marseille",
-    "Lyon",
-    "Japon",
-    "Test"
+    {
+      "title": "France"
+    },
+    {
+      "title": "Alaska"
+    },
+    {
+      "title": "Paris"
+    },
+    {
+      "title": "Alabama"
+    },
+    {
+      "title": "Japon"
+    },
+    {
+      "title": "Luxembourg"
+    },
+    {
+      "title": "Londres"
+    },
+    {
+      "title": "Belgique"
+    }
   ]
 }

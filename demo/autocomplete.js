@@ -52,7 +52,24 @@
 	document.addEventListener("DOMContentLoaded", function () {
 	  var search = new Autocomplete({
 	    input: "#search",
-	    url: "http://localhost:3000/results"
+	    xhr: {
+	      url: "http://localhost:3000/results",
+	      method: "GET",
+	      key: "q"
+	    },
+	    callback: function callback(results) {
+	      var _this = this;
+
+	      this.clearResults();
+
+	      results.forEach(function (result) {
+	        var resultDiv = document.createElement("div");
+	        resultDiv.innerHTML = "\n          <div class=\"autocomplete-item\">\n            <strong>" + result.title + "</strong>\n          </div>\n        ";
+	        _this.resultsContainer.appendChild(resultDiv);
+	      });
+
+	      this.showResults();
+	    }
 	  });
 	}, false);
 
@@ -76,14 +93,15 @@
 
 	    this.input = document.querySelector(options.input);
 	    this.data = options.data;
-	    this.url = options.url;
+	    this.xhr = options.xhr;
 	    this.maxResult = options.maxResult ? options.maxResult : 5;
-	    this.bind();
+	    this.callback = options.callback;
+	    this.bindEvents();
 	  }
 
 	  _createClass(Autocomplete, [{
-	    key: 'bind',
-	    value: function bind() {
+	    key: 'bindEvents',
+	    value: function bindEvents() {
 	      var _this = this;
 
 	      this.input.addEventListener('keyup', function (e) {
@@ -108,7 +126,7 @@
 	    value: function parse() {
 
 	      if (this.value) {
-	        if (this.url) {
+	        if (this.xhr) {
 	          this.parseURL();
 	        } else {
 	          this.parseArray();
@@ -131,39 +149,54 @@
 	  }, {
 	    key: 'parseURL',
 	    value: function parseURL() {
-	      var xhr = new XMLHttpRequest();
+	      var _this2 = this;
 
-	      xhr.open('GET', this.url, true);
+	      var xhr = new XMLHttpRequest();
+	      var url = '';
+	      var method = this.xhr.method;
+
+	      if (method === 'GET') {
+	        url = this.xhr.url + '?' + this.xhr.key + '=' + this.value;
+	      } else {
+	        url = this.xhr.url;
+	      }
+
+	      xhr.open(method, url, true);
 
 	      xhr.onreadystatechange = function (event) {
 	        if (xhr.readyState == 4) {
 	          if (xhr.status == 200) {
 	            var data = JSON.parse(xhr.response);
-	            console.log(data);
+	            _this2.callback.call(_this2, data);
 	          } else {
 	            console.error('Error from the server');
 	          }
 	        }
 	      };
 
-	      xhr.send(null);
+	      xhr.send(method === 'POST' ? this.xhr.key + '=' + this.value : null);
 	    }
 	  }, {
 	    key: 'updateResults',
 	    value: function updateResults() {
-	      var _this2 = this;
+	      var _this3 = this;
 
-	      this.resultsContainer.innerHTML = '';
+	      this.clearResults();
 
 	      this.results.forEach(function (result) {
 	        var div = document.createElement('div');
 	        div.className = 'autocomplete-item';
 	        div.innerHTML = result;
 
-	        _this2.resultsContainer.appendChild(div);
+	        _this3.resultsContainer.appendChild(div);
 	      });
 
 	      this.showResults();
+	    }
+	  }, {
+	    key: 'clearResults',
+	    value: function clearResults() {
+	      this.resultsContainer.innerHTML = '';
 	    }
 	  }, {
 	    key: 'hideResults',
