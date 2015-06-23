@@ -1,11 +1,12 @@
 {
   "name": "my-autocomplete",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Create your own autocomplete",
   "main": "lib/autocomplete.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fakedata": "node .\\node_modules\\json-server\\bin\\index.js .\\demo\\fake.json"
+    "doc": "./node_modules/.bin/jsdoc lib/autocomplete.es6.js",
+    "fakedata": "node ./node_modules/json-server/bin/index.js ./demo/fake.json"
   },
   "keywords": [
     "autocomplete",
@@ -16,6 +17,7 @@
   "devDependencies": {
     "babel-core": "^5.6.1",
     "babel-loader": "^5.1.4",
+    "jsdoc": "^3.3.2",
     "json-server": "^0.7.19",
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.9.11"
