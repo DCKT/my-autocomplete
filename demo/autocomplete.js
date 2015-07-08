@@ -151,6 +151,9 @@
 	            _this2.focusNextResult();
 	          } else if (e.keyCode === KEY_UP) {
 	            _this2.focusPreviousResult();
+	          } else if (e.keyCode === KEY_ENTER) {
+	            _this2.updateValue(document.querySelector('.autocomplete-item--focus').innerText);
+	            _this2.hideResults();
 	          }
 	        }
 	      });
