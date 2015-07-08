@@ -52,24 +52,27 @@
 	document.addEventListener("DOMContentLoaded", function () {
 	  var search = new Autocomplete({
 	    input: "#search",
-	    xhr: {
-	      url: "http://localhost:3000/results",
-	      method: "GET",
-	      key: "q"
-	    },
-	    callback: function callback(results) {
-	      var _this = this;
+	    data: test
+	    // xhr: {
+	    //   url: 'http://localhost:3000/results',
+	    //   method: 'GET',
+	    //   key: 'q'
+	    // },
+	    // callback: function(results) {
+	    //   this.clearResults();
 
-	      this.clearResults();
+	    //   results.forEach((result) => {
+	    //     var resultDiv = document.createElement('div');
+	    //     resultDiv.innerHTML = `
+	    //       <div class="autocomplete-item">
+	    //         <strong>${result.title}</strong>
+	    //       </div>
+	    //     `;
+	    //     this.resultsContainer.appendChild(resultDiv);
+	    //   });
 
-	      results.forEach(function (result) {
-	        var resultDiv = document.createElement("div");
-	        resultDiv.innerHTML = "\n          <div class=\"autocomplete-item\">\n            <strong>" + result.title + "</strong>\n          </div>\n        ";
-	        _this.resultsContainer.appendChild(resultDiv);
-	      });
-
-	      this.showResults();
-	    }
+	    //   this.showResults();
+	    // }
 	  });
 	}, false);
 
@@ -86,6 +89,10 @@
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var KEY_DOWN = 40;
+	var KEY_UP = 38;
+	var KEY_ENTER = 13;
 
 	var Autocomplete = (function () {
 
@@ -105,7 +112,9 @@
 	    this.xhr = options.xhr;
 	    this.maxResult = options.maxResult ? options.maxResult : 5;
 	    this.callback = options.callback;
+	    this.hasResults = false;
 	    this.bindEvents();
+	    this.createResultsContainer();
 	  }
 
 	  _createClass(Autocomplete, [{
@@ -115,15 +124,52 @@
 	     * @type {function}
 	     */
 	    value: function bindEvents() {
+	      var _this2 = this;
+
 	      var _this = this;
 
 	      this.input.addEventListener('keyup', function (e) {
-	        _this.value = this.value;
-
-	        _this.parse();
+	        if (e.keyCode !== KEY_DOWN && e.keyCode !== KEY_UP) {
+	          _this.value = this.value;
+	          _this.parse();
+	        }
 	      });
 
+	      // Hide when click out
+	      document.addEventListener('click', function (e) {
+	        var target = e.target;
+
+	        if (!target.classList.contains('autocomplete-results-container') || !target.classList.contains('autocomplete-item')) {
+	          _this2.hideResults();
+	        }
+	      });
+
+	      // Focus list element
+	      document.addEventListener('keyup', function (e) {
+	        if (_this2.hasResults) {
+	          if (e.keyCode === KEY_DOWN) {
+	            _this2.focusNextResult();
+	          } else if (e.keyCode === KEY_UP) {
+	            _this2.focusPreviousResult();
+	          }
+	        }
+	      });
+	    }
+	  }, {
+	    key: 'createResultsContainer',
+	    value: function createResultsContainer() {
+	      var _this3 = this;
+
 	      this.input.parentNode.insertBefore(this.createResultsDiv(), this.input.nextSibling);
+	      var containers = document.querySelectorAll('.autocomplete-results-container');
+
+	      [].forEach.call(containers, function (container) {
+	        container.addEventListener('click', function (e) {
+	          var item = e.target;
+	          _this3.updateValue(item.innerText);
+	          _this3.hideResults();
+	        });
+	      });
 	    }
 	  }, {
 	    key: 'createResultsDiv',
@@ -156,12 +202,13 @@
 	      this.results = data.filter(function (el) {
 	        return el.toLowerCase().indexOf(value) != -1;
 	      }).slice(0, this.maxResult);
+	      this.hasResults = this.results.length > 0;
 	      this.updateResults();
 	    }
 	  }, {
 	    key: 'parseURL',
 	    value: function parseURL() {
-	      var _this2 = this;
+	      var _this4 = this;
 
 	      var xhr = new XMLHttpRequest();
 	      var url = '';
@@ -179,7 +226,8 @@
 	        if (xhr.readyState == 4) {
 	          if (xhr.status == 200) {
 	            var data = JSON.parse(xhr.response);
-	            _this2.callback.call(_this2, data);
+	            _this4.hasResults = data.length > 0;
+	            _this4.callback.call(_this4, data);
 	          } else {
 	            console.error('Error from the server');
 	          }
@@ -191,7 +239,7 @@
 	  }, {
 	    key: 'updateResults',
 	    value: function updateResults() {
-	      var _this3 = this;
+	      var _this5 = this;
 
 	      this.clearResults();
 
@@ -200,10 +248,16 @@
 	        div.className = 'autocomplete-item';
 	        div.innerHTML = result;
 
-	        _this3.resultsContainer.appendChild(div);
+	        _this5.resultsContainer.appendChild(div);
 	      });
 
 	      this.showResults();
+	    }
+	  }, {
+	    key: 'updateValue',
+	    value: function updateValue(value) {
+	      this.input.value = value;
+	      this.input.focus();
 	    }
 	  }, {
 	    key: 'clearResults',
@@ -219,6 +273,45 @@
 	    key: 'showResults',
 	    value: function showResults() {
 	      this.resultsContainer.classList.add('autocomplete--visible');
+	    }
+	  }, {
+	    key: 'focusPreviousResult',
+	    value: function focusPreviousResult() {
+	      var focusItem = document.querySelector('.autocomplete--visible .autocomplete-item--focus');
+	      var items = document.querySelectorAll('.autocomplete--visible .autocomplete-item');
+	      var nextItem = null;
+
+	      if (focusItem) {
+	        nextItem = focusItem.previousSibling ? focusItem.previousSibling : items[items.length - 1];
+	      } else {
+	        nextItem = items[items.length - 1];
+	      }
+
+	      [].forEach.call(items, function (item) {
+	        item.classList.remove('autocomplete-item--focus');
+	      });
+
+	      nextItem.classList.add('autocomplete-item--focus');
+	    }
+	  }, {
+	    key: 'focusNextResult',
+	    value: function focusNextResult() {
+	      this.input.blur();
+	      var focusItem = document.querySelector('.autocomplete--visible .autocomplete-item--focus');
+	      var items = document.querySelectorAll('.autocomplete--visible .autocomplete-item');
+	      var nextItem = null;
+
+	      if (focusItem) {
+	        nextItem = focusItem.nextSibling ? focusItem.nextSibling : items[0];
+	      } else {
+	        nextItem = items[0];
+	      }
+
+	      [].forEach.call(items, function (item) {
+	        item.classList.remove('autocomplete-item--focus');
+	      });
+
+	      nextItem.classList.add('autocomplete-item--focus');
 	    }
 	  }]);
 
