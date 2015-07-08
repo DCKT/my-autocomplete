@@ -1,9 +1,12 @@
 {
   "name": "my-autocomplete",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create your own autocomplete",
   "main": "lib/autocomplete.js",
   "scripts": {
+    "start": "npm run watch && npm run ./node_modules/.bin/localhost && npm run fakedata",
+    "build": "./node_modules/.bin/webpack",
+    "watch": "./node_modules/.bin/webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1",
     "doc": "./node_modules/.bin/jsdoc lib/autocomplete.es6.js",
     "fakedata": "node ./node_modules/json-server/bin/index.js ./demo/fake.json"
