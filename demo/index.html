@@ -2,10 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Test my-autocomplete</title>
+  <title>Demo my-autocomplete</title>
   <style>
     .autocomplete-results-container {
       display: none;
+      border: 1px solid #ccc;
+      width: 400px;
+      max-height: 300px;
+      overflow: hidden;
+      border-radius: 3px;
     }
 
     .autocomplete--visible {
@@ -14,16 +19,22 @@
 
     .autocomplete-item {
       cursor: pointer;
+      padding: 5px 10px;
+    }
+    .autocomplete-item + .autocomplete-item  {
+      border-top: 1px solid #ccc;
     }
 
-    .autocomplete-item--focus {
+    .autocomplete-item--focus,
+    .autocomplete-item:hover {
       background: blue;
+      color: white;
     }
 
   </style>
 </head>
 <body>
-  <h1>Test autocomplete</h1>
+  <h1>Demo autocomplete</h1>
   
   <div>
     <label for="search">Search :</label>
