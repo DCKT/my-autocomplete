@@ -3,6 +3,7 @@
   "version": "1.1.2",
   "description": "Create your own autocomplete",
   "main": "lib/autocomplete.js",
+  "url": "https://github.com/DCKT/my-autocomplete",
   "scripts": {
     "start": "npm run watch && npm run ./node_modules/.bin/localhost && npm run fakedata",
     "build": "./node_modules/.bin/babel lib/autocomplete.es6.js > lib/autocomplete.js",
