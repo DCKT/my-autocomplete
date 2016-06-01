@@ -2,7 +2,7 @@
 
 Create and custom your own autocomplete !
 
-## Setup 
+## Setup
 Install with npm : `npm i my-autocomplete --save`
 You can require the module and use Browserify.
 
@@ -76,3 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }, false);
 ```
+
+## Try and hack
+If you want to try this plugin quickly this plugin, follow these steps :
+
+- clone the repo
+- `npm i`
+- run `npm start`
+- if you want to try ajax system don't forget to run the fake-server with `npm run fakedata` in another terminal
