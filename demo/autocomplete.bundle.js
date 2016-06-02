@@ -117,7 +117,6 @@
 	    this.hasResults = false;
 	    this.bindEvents();
 	    this.createResultsContainer();
-	    alert('fe');
 	  }
 
 	  /**
