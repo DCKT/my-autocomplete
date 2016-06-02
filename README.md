@@ -2,9 +2,12 @@
 
 Create and custom your own autocomplete !
 
+## Browsers support 
+This module use `classList` so **IE10+** but if you need lower version, you should use a polyfill.
+**ATM, this plugin has not been checked on mobile**
+
 ## Setup
-Install with npm : `npm i my-autocomplete --save`
-You can require the module and use Browserify.
+`npm i my-autocomplete --save` or link the `autocomplete.bundle.js` in a script tag
 
 ## Example with XHR
 
