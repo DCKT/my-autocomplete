@@ -112,7 +112,8 @@
 	    this.input = document.querySelector(options.input);
 	    this.data = options.data;
 	    this.xhr = options.xhr;
-	    this.maxResult = options.maxResult ? options.maxResult : 5;
+	    this.delay = options.delay || 500;
+	    this.maxResult = options.maxResult || 5;
 	    this.callback = options.callback;
 	    this.hasResults = false;
 	    this.bindEvents();
@@ -204,9 +205,17 @@
 	  }, {
 	    key: 'parse',
 	    value: function parse() {
+	      var _this4 = this;
+
 	      if (this.value) {
 	        if (this.xhr) {
-	          this.parseURL();
+	          if (this.xhrTimeout) {
+	            clearTimeout(this.xhrTimeout);
+	          }
+	          this.xhrTimeout = setTimeout(function () {
+	            _this4.parseURL();
+	            _this4.xhrTimeout = null;
+	          }, this.delay);
 	        } else {
 	          this.parseArray();
 	        }
@@ -221,7 +230,7 @@
 	      var value = this.value.toLowerCase();
 
 	      this.results = data.filter(function (el) {
-	        return el.toLowerCase().indexOf(value) != -1;
+	        return el.toLowerCase().includes(value);
 	      }).slice(0, this.maxResult);
 	      this.hasResults = this.results.length > 0;
 	      this.updateResults();
@@ -229,7 +238,7 @@
 	  }, {
 	    key: 'parseURL',
 	    value: function parseURL() {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      var xhr = new XMLHttpRequest();
 	      var url = "";
@@ -247,8 +256,8 @@
 	        if (xhr.readyState == 4) {
 	          if (xhr.status == 200) {
 	            var data = JSON.parse(xhr.response);
-	            _this4.hasResults = data.length > 0;
-	            _this4.callback.call(_this4, data);
+	            _this5.hasResults = data.length > 0;
+	            _this5.callback.call(_this5, data);
 	          } else {
 	            console.error('Error from the server');
 	          }
@@ -260,7 +269,7 @@
 	  }, {
 	    key: 'updateResults',
 	    value: function updateResults() {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      this.clearResults();
 
@@ -270,7 +279,7 @@
 	          div.className = 'autocomplete-item';
 	          div.innerHTML = result;
 
-	          _this5.resultsContainer.appendChild(div);
+	          _this6.resultsContainer.appendChild(div);
 	        });
 
 	        this.showResults();
