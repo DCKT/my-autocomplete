@@ -53,27 +53,24 @@
 	document.addEventListener('DOMContentLoaded', function () {
 	  var search = new Autocomplete({
 	    input: '#search',
-	    data: country_list
-	    // xhr: {
-	    //   url: 'http://localhost:3000/results',
-	    //   method: 'GET',
-	    //   key: 'q'
-	    // },
-	    // callback: function(results) {
-	    //   this.clearResults();
+	    xhr: {
+	      url: 'http://localhost:3000/results',
+	      method: 'GET',
+	      key: 'q'
+	    },
+	    callback: function callback(results) {
+	      var _this = this;
 
-	    //   results.forEach((result) => {
-	    //     var resultDiv = document.createElement('div');
-	    //     resultDiv.innerHTML = `
-	    //       <div class="autocomplete-item">
-	    //         <strong>${result.title}</strong>
-	    //       </div>
-	    //     `;
-	    //     this.resultsContainer.appendChild(resultDiv);
-	    //   });
+	      this.clearResults();
 
-	    //   this.showResults();
-	    // }
+	      results.forEach(function (result) {
+	        var resultDiv = document.createElement('div');
+	        resultDiv.innerHTML = "\n          <div class=\"autocomplete-item\">\n            <strong>" + result.title + "</strong>\n          </div>\n        ";
+	        _this.resultsContainer.appendChild(resultDiv);
+	      });
+
+	      this.showResults();
+	    }
 	  });
 	}, false);
 

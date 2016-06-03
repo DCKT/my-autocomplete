@@ -5,27 +5,21 @@ var country_list = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguil
 document.addEventListener('DOMContentLoaded', function() {
   var search = new Autocomplete({
     input: '#search',
-    data: country_list
-    // xhr: {
-    //   url: 'http://localhost:3000/results',
-    //   method: 'GET',
-    //   key: 'q'
-    // },
-    // callback: function(results) {
-    //   this.clearResults();
-
-    //   results.forEach((result) => {
-    //     var resultDiv = document.createElement('div');
-    //     resultDiv.innerHTML = `
-    //       <div class="autocomplete-item">
-    //         <strong>${result.title}</strong>
-    //       </div>
-    //     `;
-    //     this.resultsContainer.appendChild(resultDiv);
-    //   });
-
-    //   this.showResults();
-    // }
+    // data: country_list,
+    xhr: {
+      url: 'http://localhost:3000/results',
+      method: 'GET',
+      key: 'q'
+    },
+    render: {
+      renderItem(item) {
+        return `
+          <div class="autocomplete-item" data-autocomplete-value="${item.title}">
+            Test : <strong>${item.title}</strong>
+          </div>
+        `;
+      }
+    },
   });
 
 
