@@ -5,8 +5,8 @@ Create and custom your own autocomplete !
 # CHANGELOG
 
 **v1.2.0**
-- Remove `callback` function parameter for `render: { renderItem() }`, can be used for data or xhr
-Events will come later.
+- Remove `callback` function parameter for `render: { renderItem() }`, can be used for data or xhr.
+- Events will come later.
 
 ## Browsers support 
 This module use `classList` so **IE10+** but if you need lower version, you should use a polyfill.
