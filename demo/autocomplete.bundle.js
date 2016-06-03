@@ -53,23 +53,16 @@
 	document.addEventListener('DOMContentLoaded', function () {
 	  var search = new Autocomplete({
 	    input: '#search',
+	    // data: country_list,
 	    xhr: {
 	      url: 'http://localhost:3000/results',
 	      method: 'GET',
 	      key: 'q'
 	    },
-	    callback: function callback(results) {
-	      var _this = this;
-
-	      this.clearResults();
-
-	      results.forEach(function (result) {
-	        var resultDiv = document.createElement('div');
-	        resultDiv.innerHTML = "\n          <div class=\"autocomplete-item\">\n            <strong>" + result.title + "</strong>\n          </div>\n        ";
-	        _this.resultsContainer.appendChild(resultDiv);
-	      });
-
-	      this.showResults();
+	    render: {
+	      renderItem: function renderItem(item) {
+	        return "\n          <div class=\"autocomplete-item\" data-autocomplete-value=\"" + item.title + "\">\n            Test : <strong>" + item.title + "</strong>\n          </div>\n        ";
+	      }
 	    }
 	  });
 	}, false);
@@ -112,6 +105,7 @@
 	    this.delay = options.delay || 500;
 	    this.maxResult = options.maxResult || 5;
 	    this.callback = options.callback;
+	    this.render = options.render || {};
 	    this.hasResults = false;
 	    this.bindEvents();
 	    this.createResultsContainer();
@@ -141,6 +135,7 @@
 
 	        if (!target.classList.contains('autocomplete-results-container') || !target.classList.contains('autocomplete-item')) {
 	          _this2.hideResults();
+	          _this2.hasResults = false;
 	        }
 	      });
 
@@ -185,8 +180,11 @@
 	      [].forEach.call(containers, function (container) {
 	        container.addEventListener('click', function (e) {
 	          var item = e.target;
-	          _this3.updateValue(item.innerText);
-	          _this3.hideResults();
+
+	          if (!item.classList.contains('autocomplete-item--no-result')) {
+	            _this3.updateValue(item.getAttribute('data-autocomplete-value'));
+	            _this3.hideResults();
+	          }
 	        });
 	      });
 	    }
@@ -238,8 +236,8 @@
 	      var _this5 = this;
 
 	      var xhr = new XMLHttpRequest();
-	      var url = "";
 	      var method = this.xhr.method;
+	      var url = "";
 
 	      if (method === 'GET') {
 	        url = this.xhr.url + '?' + this.xhr.key + '=' + this.value;
@@ -254,7 +252,9 @@
 	          if (xhr.status == 200) {
 	            var data = JSON.parse(xhr.response);
 	            _this5.hasResults = data.length > 0;
-	            _this5.callback.call(_this5, data);
+	            // this.callback.call(this, data);
+	            _this5.results = data;
+	            _this5.updateResults();
 	          } else {
 	            console.error('Error from the server');
 	          }
@@ -272,17 +272,26 @@
 
 	      if (this.results.length) {
 	        this.results.forEach(function (result) {
-	          var div = document.createElement('div');
-	          div.className = 'autocomplete-item';
-	          div.innerHTML = result;
+	          if (_this6.render.renderItem) {
+	            _this6.resultsContainer.insertAdjacentHTML('beforeend', _this6.render.renderItem(result));
+	          } else {
+	            var div = document.createElement('div');
+	            div.className = 'autocomplete-item';
+	            div.innerHTML = result;
+	            div.setAttribute('data-autocomplete-value', result);
 
-	          _this6.resultsContainer.appendChild(div);
+	            _this6.resultsContainer.appendChild(div);
+	          }
 	        });
-
-	        this.showResults();
 	      } else {
-	        this.hideResults();
+	        var div = document.createElement('div');
+	        div.className = 'autocomplete-item autocomplete-item--no-result';
+	        div.innerHTML = 'No results';
+
+	        this.resultsContainer.appendChild(div);
 	      }
+
+	      this.showResults();
 	    }
 	  }, {
 	    key: 'updateValue',
@@ -313,7 +322,7 @@
 	      var nextItem = null;
 
 	      if (focusItem) {
-	        nextItem = focusItem.previousSibling ? focusItem.previousSibling : items[items.length - 1];
+	        nextItem = focusItem.previousElementSibling ? focusItem.previousElementSibling : items[items.length - 1];
 	      } else {
 	        nextItem = items[items.length - 1];
 	      }
@@ -333,7 +342,7 @@
 	      var nextItem = null;
 
 	      if (focusItem) {
-	        nextItem = focusItem.nextSibling ? focusItem.nextSibling : items[0];
+	        nextItem = focusItem.nextElementSibling ? focusItem.nextElementSibling : items[0];
 	      } else {
 	        nextItem = items[0];
 	      }
